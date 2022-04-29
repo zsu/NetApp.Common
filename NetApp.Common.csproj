@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Authors>Zhicheng Su</Authors>
+    <Copyright>Copyright 2018 Zhicheng Su</Copyright>
+    <Description>Cache, Encryption, Password Generator, Util libraries for .Net</Description>
+    <PackageProjectUrl>https://github.com/zsu/NetAppNetApp.Common</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/zsu/NetAppNetApp.Common</RepositoryUrl>
+    <PackageTags>Cache, Encryption, Password Generator, Util, .Net</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="6.0.0" />
+    <PackageReference Include="NETCore.Encrypt" Version="2.1.0" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
+  </ItemGroup>
+
+</Project>
