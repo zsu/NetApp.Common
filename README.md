@@ -1,4 +1,4 @@
-[![NuGet](https://img.shields.io/nuget/v/SessionMessage.UI.svg)](https://www.nuget.org/packages/NetApp.Common)
+[![NuGet](https://img.shields.io/nuget/v/NetApp.Common.svg)](https://www.nuget.org/packages/NetApp.Common)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 # What is NetApp.Common
@@ -9,7 +9,7 @@ Cache, Encryption, Password Generator, Util libraries for .Net
 ```xml
 Install-Package NetApp.Common
 ```
-# Getting started with SessionMessage
+# Getting started with NetApp.Common
 
   * Call the followings in Startup:  
   ```xml
