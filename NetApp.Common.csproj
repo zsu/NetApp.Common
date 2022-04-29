@@ -5,8 +5,8 @@
     <Authors>Zhicheng Su</Authors>
     <Copyright>Copyright 2018 Zhicheng Su</Copyright>
     <Description>Cache, Encryption, Password Generator, Util libraries for .Net</Description>
-    <PackageProjectUrl>https://github.com/zsu/NetAppNetApp.Common</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/zsu/NetAppNetApp.Common</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/zsu/NetApp.Common</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/zsu/NetApp.Common</RepositoryUrl>
     <PackageTags>Cache, Encryption, Password Generator, Util, .Net</PackageTags>
   </PropertyGroup>
 
