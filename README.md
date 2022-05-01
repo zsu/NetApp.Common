@@ -25,6 +25,12 @@ Install-Package NetApp.Common
             services.AddSingleton<ICacheManager<DistributedCacheManager>, DistributedCacheManager>();
             services.AddSingleton<IPasswordGenerator, PasswordGenerator>();
   ```
-
+ * appsettings.json
+ ```xml
+   "EncryptionKey": {
+    "Key": "xxxxx",
+    "Iv": "xxx"
+  }
+  ```
 # License
 All source code is licensed under MIT license - http://www.opensource.org/licenses/mit-license.php
