@@ -27,10 +27,24 @@ Install-Package NetApp.Common
   ```
  * appsettings.json
  ```xml
-   "EncryptionKey": {
-    "Key": "xxxxx",
-    "Iv": "xxx"
-  }
+   //AES Key and Iv
+    "Encryption": {
+     "Key": "xxxxx",
+     "Iv": "xxx"
+   },
+   "Email": {
+     "Smtp": "",
+     "Port": 25,
+     "UseSsl": false,
+     "Sender": "WebFramework",
+     "SenderEmail": "noreply@webframework",
+     "UserName": "",
+     "Password": "",
+     //"TestEmail":"xxx@xxx"
+   },
+   "ConnectionStrings": {
+     "RedisConnection":xxx
+   }
   ```
 # License
 All source code is licensed under MIT license - http://www.opensource.org/licenses/mit-license.php
