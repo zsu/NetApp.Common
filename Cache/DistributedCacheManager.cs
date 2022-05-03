@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Nito.AsyncEx;
 
@@ -19,7 +20,6 @@ namespace NetApp.Common.Cache
         //private readonly PerRequestCache _perRequestCache;
         private static readonly List<string> _keys;
         private static readonly AsyncLock _locker;
-
         #endregion
 
         #region Ctor

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace NetApp.Common.Cache
 {
-    public class PerRequestCacheManager
+    internal class PerRequestCacheManager
     {
         #region Fields
 
