@@ -4,10 +4,11 @@
     <TargetFramework>net6.0</TargetFramework>
     <Authors>Zhicheng Su</Authors>
     <Copyright>Copyright 2018 Zhicheng Su</Copyright>
-    <Description>Cache, Encryption, Password Generator, Util libraries for .Net</Description>
+    <Description>Cache, Encryption, Password Generator, Email, Util libraries for .Net</Description>
     <PackageProjectUrl>https://github.com/zsu/NetApp.Common</PackageProjectUrl>
     <RepositoryUrl>https://github.com/zsu/NetApp.Common</RepositoryUrl>
-    <PackageTags>Cache, Encryption, Password Generator, Util, .Net</PackageTags>
+    <PackageTags>Cache, Encryption, Password Generator, Email, Util, .Net</PackageTags>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
