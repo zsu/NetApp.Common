@@ -13,17 +13,22 @@ Install-Package NetApp.Common
 
   * Call the followings in Startup:  
   ```xml
-            services.AddTransient<IEncryptionService, EncryptionService>();
-            services.AddSingleton<ICacheManager, MemoryCacheManager>();
-            services.AddSingleton<ICacheManager<MemoryCacheManager>, MemoryCacheManager>();
-            var redisConnectionstring = GetConnectionString("RedisConnection");
-            if(!string.IsNullOrWhiteSpace(redisConnectionstring))
-                services.AddStackExchangeRedisCache(options => {
-                    options.Configuration = redisConnectionstring;
-                    options.InstanceName = $"{_env.EnvironmentName}/{Configuration.GetValue<string>("AppSettings:Application:Name")}/";
-                });
-            services.AddSingleton<ICacheManager<DistributedCacheManager>, DistributedCacheManager>();
-            services.AddSingleton<IPasswordGenerator, PasswordGenerator>();
+     services.AddEncryptionService(options => {
+         options.Key=Configuration.GetValue<string>("Encryption:Key");
+         options.Iv = Configuration.GetValue<string>("Encryption:Iv");
+     });
+     services.AddCacheManager(options => {
+         var redisConnectionstring = GetConnectionString("RedisConnection"); 
+         options.RedisCacheOptions.Configuration = redisConnectionstring;
+         options.RedisCacheOptions.InstanceName= $"{_env.EnvironmentName}/{Configuration.GetValue<string>("AppSettings:Application:Name")}/";
+     });
+     services.AddEmailService(options => {
+         Configuration.GetSection("Email").Bind(options);
+     });
+     services.AddPasswordGenerator();
+     services.AddLdapService(options => {
+         Configuration.GetSection("Ldap").Bind(options);
+     });
   ```
  * appsettings.json
  ```xml
