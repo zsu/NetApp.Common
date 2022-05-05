@@ -29,7 +29,7 @@ namespace NetApp.Common
         ///// <param name="isHtml">is set message as html</param>
         //public void Send(string mailTo, string subject, string message, bool isHtml = false, List<string> attachments = null)
         //{
-        //    SendEmail(mailTo, null, null, subject, message, Encoding.UTF8, isHtml, attachments).GetAwaiter().GetResult();
+        //    SendEmail(mailTo, null, null, subject, message, Encoding.UTF8, isHtml, attachments);
         //}
 
         ///// <summary>
@@ -42,7 +42,7 @@ namespace NetApp.Common
         ///// <param name="isHtml">is set message as html</param>
         //public void Send(string mailTo, string subject, string message, Encoding encoding, bool isHtml = false, List<string> attachments = null)
         //{
-        //    SendEmail(mailTo, null, null, subject, message, encoding, isHtml, attachments).GetAwaiter().GetResult();
+        //    SendEmail(mailTo, null, null, subject, message, encoding, isHtml, attachments);
         //}
 
         ///// <summary>
@@ -56,7 +56,7 @@ namespace NetApp.Common
         ///// <param name="isHtml">is set message as html</param>
         //public void Send(string mailTo, string mailCc, string mailBcc, string subject, string message, bool isHtml = false, List<string> attachments = null)
         //{
-        //    SendEmail(mailTo, mailCc, mailBcc, subject, message, Encoding.UTF8, isHtml, attachments).GetAwaiter().GetResult();
+        //    SendEmail(mailTo, mailCc, mailBcc, subject, message, Encoding.UTF8, isHtml, attachments);
         //}
 
         ///// <summary>
@@ -71,9 +71,12 @@ namespace NetApp.Common
         ///// <param name="isHtml">is set message as html</param>
         //public void Send(string mailTo, string mailCc, string mailBcc, string subject, string message, Encoding encoding, bool isHtml = false, List<string> attachments = null)
         //{
-        //    SendEmail(mailTo, mailCc, mailBcc, subject, message, encoding, isHtml, attachments).GetAwaiter().GetResult();
+        //    SendEmail(mailTo, mailCc, mailBcc, subject, message, encoding, isHtml, attachments);
         //}
-
+        //private void SendEmail(string mailTo, string mailCc, string mailBcc, string subject, string message, Encoding encoding, bool isHtml, List<string> attachments)
+        //{
+        //    SendEmailAsync(mailTo, mailCc, mailBcc, subject, message, encoding, isHtml, attachments).GetAwaiter().GetResult();
+        //}
 
         /// <summary>
         /// send email with UTF-8 async
