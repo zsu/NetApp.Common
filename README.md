@@ -26,9 +26,6 @@ Install-Package NetApp.Common
          Configuration.GetSection("Email").Bind(options);
      });
      services.AddPasswordGenerator();
-     services.AddLdapService(options => {
-         Configuration.GetSection("Ldap").Bind(options);
-     });
   ```
  * appsettings.json
  ```xml
