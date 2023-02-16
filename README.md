@@ -42,7 +42,15 @@ Install-Package NetApp.Common
      "SenderEmail": "noreply@webframework",
      "UserName": "",
      "Password": "",
-     //"TestEmail":"xxx@xxx"
+     /*"TestEmail":"xxx@xxx",
+     "OAuth2":{
+         GrantType: "password",
+         ClientId: "xxx",
+         ClientSecret: "xxx",
+         TenantId: "xxx",
+         RedirectUrl: "https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token",
+         Scopes: "xxx,xxx"
+     }*/
    },
    "ConnectionStrings": {
      "RedisConnection":xxx

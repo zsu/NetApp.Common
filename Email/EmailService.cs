@@ -4,9 +4,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,10 +17,23 @@ namespace NetApp.Common
     public class EmailService : IEmailService
     {
         private readonly EmailSettings _emailSettings;
+        private IEncryptionService _encryptionService;
 
         public EmailService(IOptions<EmailSettings> emailSettings)
         {
             _emailSettings = emailSettings.Value;
+        }
+        public EmailService(IOptions<EmailSettings> emailSettings,IEncryptionService encryption)
+        {
+            _emailSettings = emailSettings.Value;
+            _encryptionService = encryption;
+            if(_encryptionService!=null)
+            {
+                if (!string.IsNullOrWhiteSpace(_emailSettings.Password))
+                    _emailSettings.Password=_encryptionService.Decrypt(_emailSettings.Password);
+                if (_emailSettings.OAuth2!=null && !string.IsNullOrWhiteSpace(_emailSettings.OAuth2.ClientSecret))
+                    _emailSettings.OAuth2.ClientSecret = _encryptionService.Decrypt(_emailSettings.OAuth2.ClientSecret);
+            }
         }
         ///// <summary>
         ///// send email with UTF-8
@@ -237,8 +252,35 @@ namespace NetApp.Common
                 client.Connect(_emailSettings.Smtp, _emailSettings.Port, !_emailSettings.UseSsl ? SecureSocketOptions.None : SecureSocketOptions.Auto);
                 if (!string.IsNullOrWhiteSpace(_emailSettings.UserName))
                     client.Authenticate(_emailSettings.UserName, _emailSettings.Password);
+                else if (_emailSettings.OAuth2 != null)
+                {
+                    var accessToken = await getAccessToken();
+                    client.Authenticate(accessToken);
+                }
                 await client.SendAsync(mimeMessage);
                 client.Disconnect(true);
+            }
+        }
+        private async Task<SaslMechanismOAuth2> getAccessToken()
+        {
+            var content = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type", "password"),
+                new KeyValuePair<string, string>("username", _emailSettings.UserName),
+                new KeyValuePair<string, string>("password", _emailSettings.Password),
+                new KeyValuePair<string, string>("client_id", _emailSettings.OAuth2.ClientId),
+                new KeyValuePair<string, string>("client_secret", _emailSettings.OAuth2.ClientSecret),
+                new KeyValuePair<string, string>("scope", _emailSettings.OAuth2.Scopes),
+            });
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsync(_emailSettings.OAuth2.RedirectUrl, content).ConfigureAwait(continueOnCapturedContext: false);
+                var responseString = await response.Content.ReadAsStringAsync();
+                var json = JObject.Parse(responseString);
+                var token = json["access_token"];
+                return token != null
+                    ? new SaslMechanismOAuth2(_emailSettings.UserName, token.ToString())
+                    : null;
             }
         }
     }
