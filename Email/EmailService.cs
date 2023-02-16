@@ -23,15 +23,15 @@ namespace NetApp.Common
         {
             _emailSettings = emailSettings.Value;
         }
-        public EmailService(IOptions<EmailSettings> emailSettings,IEncryptionService encryption)
+        public EmailService(IOptions<EmailSettings> emailSettings, IEncryptionService encryption)
         {
             _emailSettings = emailSettings.Value;
             _encryptionService = encryption;
-            if(_encryptionService!=null)
+            if (_encryptionService != null)
             {
                 if (!string.IsNullOrWhiteSpace(_emailSettings.Password))
-                    _emailSettings.Password=_encryptionService.Decrypt(_emailSettings.Password);
-                if (_emailSettings.OAuth2!=null && !string.IsNullOrWhiteSpace(_emailSettings.OAuth2.ClientSecret))
+                    _emailSettings.Password = _encryptionService.Decrypt(_emailSettings.Password);
+                if (_emailSettings.OAuth2 != null && !string.IsNullOrWhiteSpace(_emailSettings.OAuth2.ClientSecret))
                     _emailSettings.OAuth2.ClientSecret = _encryptionService.Decrypt(_emailSettings.OAuth2.ClientSecret);
             }
         }
@@ -250,28 +250,32 @@ namespace NetApp.Common
             {
                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
                 client.Connect(_emailSettings.Smtp, _emailSettings.Port, !_emailSettings.UseSsl ? SecureSocketOptions.None : SecureSocketOptions.Auto);
-                if (!string.IsNullOrWhiteSpace(_emailSettings.UserName))
-                    client.Authenticate(_emailSettings.UserName, _emailSettings.Password);
-                else if (_emailSettings.OAuth2 != null)
+                if (_emailSettings.OAuth2 != null)
                 {
                     var accessToken = await getAccessToken();
                     client.Authenticate(accessToken);
                 }
+                else if (!string.IsNullOrWhiteSpace(_emailSettings.UserName))
+                    client.Authenticate(_emailSettings.UserName, _emailSettings.Password);
                 await client.SendAsync(mimeMessage);
                 client.Disconnect(true);
             }
         }
         private async Task<SaslMechanismOAuth2> getAccessToken()
         {
-            var content = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
+            var attributes = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", _emailSettings.UserName),
-                new KeyValuePair<string, string>("password", _emailSettings.Password),
+                new KeyValuePair<string, string>("grant_type", _emailSettings.OAuth2.GrantType),
                 new KeyValuePair<string, string>("client_id", _emailSettings.OAuth2.ClientId),
                 new KeyValuePair<string, string>("client_secret", _emailSettings.OAuth2.ClientSecret),
                 new KeyValuePair<string, string>("scope", _emailSettings.OAuth2.Scopes),
-            });
+            };
+            if (!string.IsNullOrWhiteSpace(_emailSettings.UserName))
+            {
+                attributes.Add(new KeyValuePair<string, string>("username", _emailSettings.UserName));
+                attributes.Add(new KeyValuePair<string, string>("password", _emailSettings.Password));
+            }
+            var content = new FormUrlEncodedContent(attributes);
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(_emailSettings.OAuth2.RedirectUrl, content).ConfigureAwait(continueOnCapturedContext: false);

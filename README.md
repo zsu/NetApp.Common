@@ -44,7 +44,7 @@ Install-Package NetApp.Common
      "Password": "",
      /*"TestEmail":"xxx@xxx",
      "OAuth2":{
-         GrantType: "password",
+         GrantType: "client_credentials",
          ClientId: "xxx",
          ClientSecret: "xxx",
          TenantId: "xxx",

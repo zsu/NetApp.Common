@@ -19,7 +19,7 @@ namespace NetApp.Common
     }
     public class OAuth2Settings
     {
-        public string GrantType { get; set; } = "password";
+        public string GrantType { get; set; } = "client_credentials";
         public string ClientId { get; set; }
         public string TenantId { get; set; }
         public string ClientSecret { get; set; }
