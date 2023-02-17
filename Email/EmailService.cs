@@ -278,7 +278,7 @@ namespace NetApp.Common
             var content = new FormUrlEncodedContent(attributes);
             using (var client = new HttpClient())
             {
-                var response = await client.PostAsync(_emailSettings.OAuth2.RedirectUrl, content).ConfigureAwait(continueOnCapturedContext: false);
+                var response = await client.PostAsync(_emailSettings.OAuth2.TokenUri, content).ConfigureAwait(continueOnCapturedContext: false);
                 var responseString = await response.Content.ReadAsStringAsync();
                 var json = JObject.Parse(responseString);
                 var token = json["access_token"];

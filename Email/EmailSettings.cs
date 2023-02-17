@@ -24,6 +24,7 @@ namespace NetApp.Common
         public string TenantId { get; set; }
         public string ClientSecret { get; set; }
         public string Scopes { get; set; } = "email,offline_access,https://outlook.office.com/SMTP.Send";//https://outlook.office.com/IMAP.AccessAsUser.All,https://outlook.office.com/POP.AccessAsUser.All,
-        public string RedirectUrl { get; set; }//= $"https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token";
+        public string TokenUri { get; set; }//= $"https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token";
+        public string RedirectUri { get; set; }
     }
 }

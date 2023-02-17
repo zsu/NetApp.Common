@@ -48,7 +48,7 @@ Install-Package NetApp.Common
          ClientId: "xxx",
          ClientSecret: "xxx",
          TenantId: "xxx",
-         RedirectUrl: "https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token",
+         TokenUri: "https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token",
          Scopes: "xxx,xxx"
      }*/
    },
