@@ -23,10 +23,9 @@ namespace NetApp.Common
         public string Decrypt(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentNullException("value");
+                return value;
             var key = _options?.Key;
             var iv = _options?.Iv;
-            //var encyrptedString = EncryptProvider.AESEncrypt(Configuration.GetConnectionString(name), key, iv);
             if (string.IsNullOrWhiteSpace(key))
                 return value;
             else
@@ -37,10 +36,9 @@ namespace NetApp.Common
         public string Encrypt(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentNullException("value");
+                return value;
             var key = _options?.Key;
             var iv = _options?.Iv;
-            //var encyrptedString = EncryptProvider.AESEncrypt(Configuration.GetConnectionString(name), key, iv);
             if (string.IsNullOrWhiteSpace(key))
                 return value;
             else
