@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -17,7 +16,6 @@ namespace NetApp.Common.Cache
         #region Fields
 
         private readonly IDistributedCache _distributedCache;
-        //private readonly PerRequestCache _perRequestCache;
         private static readonly List<string> _keys;
         private static readonly AsyncLock _locker;
         #endregion
@@ -32,11 +30,6 @@ namespace NetApp.Common.Cache
         public DistributedCacheManager(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
-        }
-        public DistributedCacheManager(IDistributedCache distributedCache, IHttpContextAccessor httpContextAccessor)
-        {
-            _distributedCache = distributedCache;
-            //_perRequestCache = new PerRequestCache(httpContextAccessor);
         }
 
         #endregion
@@ -61,7 +54,6 @@ namespace NetApp.Common.Cache
                 return (false, default);
 
             var item = JsonConvert.DeserializeObject<T>(json);
-            //_perRequestCache.Set(key, item);
 
             return (true, item);
         }
@@ -74,7 +66,6 @@ namespace NetApp.Common.Cache
                 return (false, default);
 
             var item = JsonConvert.DeserializeObject<T>(json);
-            //_perRequestCache.Set(key, item);
 
             return (true, item);
         }
@@ -85,10 +76,9 @@ namespace NetApp.Common.Cache
                 return;
 
             _distributedCache.SetString(key, JsonConvert.SerializeObject(data), PrepareEntryOptions(cacheTime.Value));
-            //_perRequestCache.Set(key, data);
+            //using var _ = _locker.Lock();
+            using (_locker.Lock()) { _keys.Add(key); }
 
-            using var _ = _locker.Lock();
-            _keys.Add(key);
         }
 
         #endregion
@@ -101,9 +91,6 @@ namespace NetApp.Common.Cache
 
         public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquire, int? cacheTime)
         {
-            //if (_perRequestCache.IsSet(key))
-            //    return _perRequestCache.Get(key, () => default(T));
-
             if (cacheTime <= 0)
                 return await acquire();
 
@@ -122,9 +109,6 @@ namespace NetApp.Common.Cache
 
         public async Task<T> GetAsync<T>(string key, Func<T> acquire, int? cacheTime)
         {
-            //if (_perRequestCache.IsSet(key))
-            //    return _perRequestCache.Get(key, () => default(T));
-
             if (cacheTime <= 0)
                 return acquire();
 
@@ -143,9 +127,6 @@ namespace NetApp.Common.Cache
 
         public T Get<T>(string key, Func<T> acquire, int? cacheTime)
         {
-            //if (_perRequestCache.IsSet(key))
-            //    return _perRequestCache.Get(key, () => default(T));
-
             if ((cacheTime ?? 0) <= 0)
                 return acquire();
 
@@ -164,10 +145,8 @@ namespace NetApp.Common.Cache
         public async Task RemoveAsync(string cacheKey)
         {
             await _distributedCache.RemoveAsync(cacheKey);
-            //_perRequestCache.Remove(cacheKey);
-
-            using var _ = await _locker.LockAsync();
-            _keys.Remove(cacheKey);
+            //using var _ = await _locker.LockAsync();
+            using (_locker.Lock()) { _keys.Remove(cacheKey); }
         }
         public async Task SetAsync(string key, object data, int? cacheTime)
         {
@@ -175,37 +154,36 @@ namespace NetApp.Common.Cache
                 return;
 
             await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(data), PrepareEntryOptions(cacheTime.Value));
-            //_perRequestCache.Set(key, data);
 
-            using var _ = await _locker.LockAsync();
-            _keys.Add(key);
+            //using var _ = await _locker.LockAsync();
+            using (_locker.Lock()) { _keys.Add(key); }
         }
 
 
         public async Task RemoveByPrefixAsync(string prefix)
         {
-            //_perRequestCache.RemoveByPattern(prefix);
-
-            using var _ = await _locker.LockAsync();
-
-            foreach (var key in _keys.Where(key => key.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase)).ToList())
+            //using var _ = await _locker.LockAsync();
+            using (_locker.Lock())
             {
-                await _distributedCache.RemoveAsync(key);
-                _keys.Remove(key);
+                foreach (var key in _keys.Where(key => key.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase)).ToList())
+                {
+                    await _distributedCache.RemoveAsync(key);
+                    _keys.Remove(key);
+                }
             }
         }
 
         public async Task ClearAsync()
         {
-            //foreach (var redisKey in _keys)
-            //    _perRequestCache.Remove(redisKey);
+            //using var _ = await _locker.LockAsync();
 
-            using var _ = await _locker.LockAsync();
+            using (_locker.Lock())
+            {
+                foreach (var key in _keys)
+                    await _distributedCache.RemoveAsync(key);
 
-            foreach (var key in _keys)
-                await _distributedCache.RemoveAsync(key);
-
-            _keys.Clear();
+                _keys.Clear();
+            }
         }
         public bool PerformActionWithLock(string resource, TimeSpan expirationTime, Action action)
         {
