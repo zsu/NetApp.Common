@@ -11,14 +11,11 @@ namespace NetApp.Common
     public class EncryptionService : IEncryptionService
     {
         private EncryptionOptions _options;
-        public EncryptionService(IOptions<EncryptionOptions> options)
+        public EncryptionService(IOptions<EncryptionOptions> options):this(options?.Value)
+        {}
+        public EncryptionService(EncryptionOptions options)
         {
-            //if (options == null)
-            //{
-            //    throw new ArgumentNullException(nameof(options));
-            //}
-
-            _options = options?.Value;
+            _options = options;
         }
         public string Decrypt(string value)
         {

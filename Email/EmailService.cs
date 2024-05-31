@@ -19,13 +19,17 @@ namespace NetApp.Common
         private readonly EmailSettings _emailSettings;
         private IEncryptionService _encryptionService;
 
-        public EmailService(IOptions<EmailSettings> emailSettings)
+        public EmailService(IOptions<EmailSettings> emailSettings):this(emailSettings?.Value)
+        {}
+        public EmailService(IOptions<EmailSettings> emailSettings, IEncryptionService encryption):this(emailSettings?.Value)
+        {}
+        public EmailService(EmailSettings emailSettings)
         {
-            _emailSettings = emailSettings.Value;
+            _emailSettings = emailSettings;
         }
-        public EmailService(IOptions<EmailSettings> emailSettings, IEncryptionService encryption)
+        public EmailService(EmailSettings emailSettings, IEncryptionService encryption)
         {
-            _emailSettings = emailSettings.Value;
+            _emailSettings = emailSettings;
             _encryptionService = encryption;
             if (_encryptionService != null)
             {
