@@ -27,8 +27,8 @@ namespace NetApp.Common
                 return value;
             else
                 if (string.IsNullOrWhiteSpace(iv))
-                return Regex.Unescape(EncryptProvider.AESDecrypt(value, key));
-            return Regex.Unescape(EncryptProvider.AESDecrypt(value, key, iv));
+                return EncryptProvider.AESDecrypt(value, key);
+            return EncryptProvider.AESDecrypt(value, key, iv);
         }
         public string Encrypt(string value)
         {
@@ -40,8 +40,8 @@ namespace NetApp.Common
                 return value;
             else
                 if (string.IsNullOrWhiteSpace(iv))
-                return Regex.Unescape(EncryptProvider.AESEncrypt(value, key));
-            return Regex.Unescape(EncryptProvider.AESEncrypt(value, key, iv));
+                return EncryptProvider.AESEncrypt(value, key);
+            return EncryptProvider.AESEncrypt(value, key, iv);
         }
     }
 }
