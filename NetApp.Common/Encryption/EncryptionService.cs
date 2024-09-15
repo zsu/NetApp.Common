@@ -51,7 +51,7 @@ namespace NetApp.Common
                     iv = EncryptProvider.CreateAesKey().IV;
                 }
             var encrypted=EncryptProvider.AESEncrypt(value, key, iv);
-            if (_options?.Iv == null)
+            if (string.IsNullOrWhiteSpace(_options?.Iv))
             {
                 return $"{iv}{encrypted}";
             } 

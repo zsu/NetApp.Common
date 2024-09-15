@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/zsu/NetApp.Common</PackageProjectUrl>
     <RepositoryUrl>https://github.com/zsu/NetApp.Common</RepositoryUrl>
     <PackageTags>Cache, Encryption, Password Generator, Email, Util, .Net</PackageTags>
-    <Version>4.2.0</Version>
+    <Version>4.3.0</Version>
     <PackageOutputPath>$(OutputPath)</PackageOutputPath>
   </PropertyGroup>
 
