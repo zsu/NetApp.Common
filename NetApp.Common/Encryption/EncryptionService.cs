@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NETCore.Encrypt;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -25,9 +27,14 @@ namespace NetApp.Common
             var iv = _options?.Iv;
             if (string.IsNullOrWhiteSpace(key))
                 return value;
-            else
-                if (string.IsNullOrWhiteSpace(iv))
-                return EncryptProvider.AESDecrypt(value, key);
+            else if (string.IsNullOrWhiteSpace(iv))
+            {
+                if(value.Length < 16)
+                    throw new Exception("Invalid encrypted value.");
+                iv = value.Substring(0,16);
+                var encryptedValue = value.Substring(16);
+                return EncryptProvider.AESDecrypt(encryptedValue, key,iv);
+            }
             return EncryptProvider.AESDecrypt(value, key, iv);
         }
         public string Encrypt(string value)
@@ -40,8 +47,15 @@ namespace NetApp.Common
                 return value;
             else
                 if (string.IsNullOrWhiteSpace(iv))
-                return EncryptProvider.AESEncrypt(value, key);
-            return EncryptProvider.AESEncrypt(value, key, iv);
+                {
+                    iv = EncryptProvider.CreateAesKey().IV;
+                }
+            var encrypted=EncryptProvider.AESEncrypt(value, key, iv);
+            if (_options?.Iv == null)
+            {
+                return $"{iv}{encrypted}";
+            } 
+            return encrypted;
         }
     }
 }
