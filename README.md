@@ -3,7 +3,7 @@
 
 # What is NetApp.Common
 
-Cache, Encryption, Password Generator, Util libraries for .Net
+Cache, Encryption, Email, Password Generator, Util libraries for .Net
 
 # NuGet
 ```xml
@@ -14,7 +14,7 @@ Install-Package NetApp.Common
   * Call the followings in Startup:  
   ```xml
      services.AddEncryptionService(options => {
-         options.Key=Configuration.GetValue<string>("Encryption:Key");
+         options.Key=Configuration.GetValue<string>("Encryption:Key"); //32 bytes key
          options.Iv = Configuration.GetValue<string>("Encryption:Iv");
      });
      services.AddCacheManager(options => {
