@@ -7,13 +7,13 @@ namespace NetApp.Common.Test
     [TestClass]
     public class UnitTest1
     {
-        private EncryptionOptions _options;
+        private string _key;
         private IEncryptionService _encryptionService;
         [TestInitialize]
         public void Setup()
         {
-            _options = new EncryptionOptions { Key = "6EC874CCB8B8E24E9F912C4381A0C2FA" };
-            _encryptionService = new EncryptionService(_options);
+            _key =  "6EC874CCB8B8E24E9F912C4381A0C2FA" ;
+            _encryptionService = new EncryptionService(_key);
         }
         [TestMethod]
         public void SpecialCharacters()
@@ -33,8 +33,8 @@ namespace NetApp.Common.Test
         [TestMethod]
         public void EncryptAndDecryptWithoutKey()
         {
-            EncryptionOptions options=null;
-            var encryptionService = new EncryptionService(options);
+            string key=null;
+            var encryptionService = new EncryptionService(key);
 
             var value = "Hello, World!";
             var encryptedValue = encryptionService.Encrypt(value);
