@@ -12,7 +12,7 @@ namespace NetApp.Common.Test
         [TestInitialize]
         public void Setup()
         {
-            _options = new EncryptionOptions { Key = "6EC874CCB8B8E24E9F912C4381A0C2FA", Iv = "g0W90jtQ0DxEveXi" };
+            _options = new EncryptionOptions { Key = "6EC874CCB8B8E24E9F912C4381A0C2FA" };
             _encryptionService = new EncryptionService(_options);
         }
         [TestMethod]
@@ -31,9 +31,9 @@ namespace NetApp.Common.Test
         }
 
         [TestMethod]
-        public void EncryptAndDecryptWithoutIv()
+        public void EncryptAndDecryptWithoutKey()
         {
-            var options = new EncryptionOptions { Key = "6EC874CCB8B8E24E9F912C4381A0C2FA" };
+            EncryptionOptions options=null;
             var encryptionService = new EncryptionService(options);
 
             var value = "Hello, World!";
