@@ -13,30 +13,32 @@ namespace NetApp.Common
 {
     public class EncryptionService : IEncryptionService
     {
-        private string _key;
-        public EncryptionService(string key)
+        private EncryptionOptions _options;
+        public EncryptionService(IOptions<EncryptionOptions> options) : this(options?.Value)
+        { }
+        public EncryptionService(EncryptionOptions options)
         {
-            if (!string.IsNullOrWhiteSpace(key) && (key?.Length != 32))
+            _options = options;
+            if (!string.IsNullOrWhiteSpace(_options?.Key) && (_options?.Key?.Length != 32))
             {
                 throw new ArgumentException("Key must be 32 characters long.");
             }
-            _key = key;
         }
         public string Decrypt(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
                 return value;
-            if (string.IsNullOrWhiteSpace(_key))
+            if (string.IsNullOrWhiteSpace(_options?.Key))
                 return value;
-            return AESDecrypt(_key, value);
+            return AESDecrypt(_options?.Key, value);
         }
         public string Encrypt(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
                 return value;
-            if (string.IsNullOrWhiteSpace(_key))
+            if (string.IsNullOrWhiteSpace(_options?.Key))
                 return value;
-            return AESEncrypt(_key, value);
+            return AESEncrypt(_options?.Key, value);
         }
         private string AESEncrypt(string key, string plainText)
         {

@@ -15,9 +15,9 @@ namespace NetApp.Common
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEncryptionService(this IServiceCollection services, Action<string> setupAction)
+        public static IServiceCollection AddEncryptionService(this IServiceCollection services, Action<EncryptionOptions> setupAction)
         {
-            services.AddOptions<string>().Configure(setupAction);
+            services.AddOptions<EncryptionOptions>().Configure(setupAction);
             services.AddTransient<IEncryptionService, EncryptionService>();
             return services;
         }
