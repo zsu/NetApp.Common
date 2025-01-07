@@ -47,7 +47,6 @@ Install-Package NetApp.Common
          GrantType: "client_credentials",
          ClientId: "xxx",
          ClientSecret: "xxx",
-         TenantId: "xxx",
          TokenUri: "https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token",
          Scopes: "xxx,xxx"
      }*/
