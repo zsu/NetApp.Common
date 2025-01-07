@@ -274,11 +274,6 @@ namespace NetApp.Common
                 new KeyValuePair<string, string>("client_secret", _emailSettings.OAuth2.ClientSecret),
                 new KeyValuePair<string, string>("scope", _emailSettings.OAuth2.Scopes),
             };
-            if (!string.IsNullOrWhiteSpace(_emailSettings.UserName))
-            {
-                attributes.Add(new KeyValuePair<string, string>("username", _emailSettings.UserName));
-                attributes.Add(new KeyValuePair<string, string>("password", _emailSettings.Password));
-            }
             var content = new FormUrlEncodedContent(attributes);
             using (var client = new HttpClient())
             {
@@ -287,7 +282,7 @@ namespace NetApp.Common
                 var json = JObject.Parse(responseString);
                 var token = json["access_token"];
                 return token != null
-                    ? new SaslMechanismOAuth2(_emailSettings.UserName, token.ToString())
+                    ? new SaslMechanismOAuth2(_emailSettings.SenderEmail, token.ToString())
                     : null;
             }
         }
