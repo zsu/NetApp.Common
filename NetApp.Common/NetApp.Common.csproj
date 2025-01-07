@@ -8,12 +8,12 @@
     <PackageProjectUrl>https://github.com/zsu/NetApp.Common</PackageProjectUrl>
     <RepositoryUrl>https://github.com/zsu/NetApp.Common</RepositoryUrl>
     <PackageTags>Cache, Encryption, Password Generator, Email, Util, .Net</PackageTags>
-    <Version>5.0.6</Version>
+    <Version>6.0.1</Version>
     <PackageOutputPath>$(OutputPath)</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="4.8.0" />
+    <PackageReference Include="MailKit" Version="4.9.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />

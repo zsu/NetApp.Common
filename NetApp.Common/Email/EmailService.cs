@@ -255,67 +255,67 @@ namespace NetApp.Common
             using (var client = new SmtpClient())
             {
                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                client.Connect(_emailSettings.Smtp, _emailSettings.Port, !_emailSettings.UseSsl ? SecureSocketOptions.None : SecureSocketOptions.Auto);
+                await client.ConnectAsync(_emailSettings.Smtp, _emailSettings.Port, !_emailSettings.UseSsl ? SecureSocketOptions.None : SecureSocketOptions.Auto).ConfigureAwait(false);
                 if (_emailSettings.OAuth2 != null)
                 {
-                    var accessToken =  GetAccessToken();
-                    client.Authenticate(accessToken);
+                    var accessToken =  await GetAccessTokenAsync().ConfigureAwait(false);
+                    await client.AuthenticateAsync(accessToken).ConfigureAwait(false);
                 }
                 else if (!string.IsNullOrWhiteSpace(_emailSettings.UserName))
-                    client.Authenticate(_emailSettings.UserName, _emailSettings.Password);
-                client.Send(mimeMessage);
-                client.Disconnect(true);
+                    await client.AuthenticateAsync(_emailSettings.UserName, _emailSettings.Password).ConfigureAwait(false);
+                await client.SendAsync(mimeMessage).ConfigureAwait(false);
+                await client.DisconnectAsync(true).ConfigureAwait(false);
             }
         }
-        //private async Task<SaslMechanismOAuth2> GetAccessTokenAsync()
+        private async Task<SaslMechanismOAuth2> GetAccessTokenAsync()
+        {
+            var attributes = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type", _emailSettings.OAuth2.GrantType),
+                new KeyValuePair<string, string>("client_id", _emailSettings.OAuth2.ClientId),
+                new KeyValuePair<string, string>("client_secret", _emailSettings.OAuth2.ClientSecret),
+                new KeyValuePair<string, string>("scope", _emailSettings.OAuth2.Scopes),
+            };
+            var content = new FormUrlEncodedContent(attributes);
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsync(_emailSettings.OAuth2.TokenUri, content).ConfigureAwait(false);
+                var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var json = JObject.Parse(responseString);
+                var token = json["access_token"];
+                return token != null
+                    ? new SaslMechanismOAuth2(_emailSettings.SenderEmail, token.ToString())
+                    : null;
+            }
+        }
+        //private SaslMechanismOAuth2 GetAccessToken()
         //{
-        //    var attributes = new List<KeyValuePair<string, string>>
+        //    try
         //    {
-        //        new KeyValuePair<string, string>("grant_type", _emailSettings.OAuth2.GrantType),
-        //        new KeyValuePair<string, string>("client_id", _emailSettings.OAuth2.ClientId),
-        //        new KeyValuePair<string, string>("client_secret", _emailSettings.OAuth2.ClientSecret),
-        //        new KeyValuePair<string, string>("scope", _emailSettings.OAuth2.Scopes),
+        //        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+        //        using (var client = new WebClient())
+        //        {
+        //            var parameters = new NameValueCollection
+        //    {
+        //        {"grant_type", "client_credentials"},
+        //        {"client_id", _emailSettings.OAuth2.ClientId},
+        //        {"client_secret", _emailSettings.OAuth2.ClientSecret},
+        //        {"scope", _emailSettings.OAuth2.Scopes}
         //    };
-        //    var content = new FormUrlEncodedContent(attributes);
-        //    using (var client = new HttpClient())
+
+        //            byte[] response = client.UploadValues(_emailSettings.OAuth2.TokenUri, parameters);
+        //            string result = System.Text.Encoding.UTF8.GetString(response);
+        //            string token = JObject.Parse(result)["access_token"].ToString();
+        //            return token != null
+        //                    ? new SaslMechanismOAuth2(_emailSettings.SenderEmail, token)
+        //                    : null;
+        //        }
+        //    }
+        //    catch (Exception ex)
         //    {
-        //        var response = await client.PostAsync(_emailSettings.OAuth2.TokenUri, content).ConfigureAwait(false);
-        //        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        //        var json = JObject.Parse(responseString);
-        //        var token = json["access_token"];
-        //        return token != null
-        //            ? new SaslMechanismOAuth2(_emailSettings.SenderEmail, token.ToString())
-        //            : null;
+        //        throw new Exception($"Failed to get access token: {ex.Message}", ex);
         //    }
         //}
-        private SaslMechanismOAuth2 GetAccessToken()
-        {
-            try
-            {
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-                using (var client = new WebClient())
-                {
-                    var parameters = new NameValueCollection
-            {
-                {"grant_type", "client_credentials"},
-                {"client_id", _emailSettings.OAuth2.ClientId},
-                {"client_secret", _emailSettings.OAuth2.ClientSecret},
-                {"scope", _emailSettings.OAuth2.Scopes}
-            };
-
-                    byte[] response = client.UploadValues(_emailSettings.OAuth2.TokenUri, parameters);
-                    string result = System.Text.Encoding.UTF8.GetString(response);
-                    string token = JObject.Parse(result)["access_token"].ToString();
-                    return token != null
-                            ? new SaslMechanismOAuth2(_emailSettings.SenderEmail, token)
-                            : null;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Failed to get access token: {ex.Message}", ex);
-            }
-        }
     }
 }
