@@ -15,7 +15,6 @@ Install-Package NetApp.Common
   ```xml
      services.AddEncryptionService(options => {
          options.Key=Configuration.GetValue<string>("Encryption:Key"); //32 bytes key
-         options.Iv = Configuration.GetValue<string>("Encryption:Iv");
      });
      services.AddCacheManager(options => {
          var redisConnectionstring = GetConnectionString("RedisConnection"); 
@@ -47,7 +46,6 @@ Install-Package NetApp.Common
          GrantType: "client_credentials",
          ClientId: "xxx",
          ClientSecret: "xxx",
-         TenantId: "xxx",
          TokenUri: "https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token",
          Scopes: "xxx,xxx"
      }*/
