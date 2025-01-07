@@ -7,7 +7,9 @@ using MimeKit.Text;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -256,34 +258,63 @@ namespace NetApp.Common
                 client.Connect(_emailSettings.Smtp, _emailSettings.Port, !_emailSettings.UseSsl ? SecureSocketOptions.None : SecureSocketOptions.Auto);
                 if (_emailSettings.OAuth2 != null)
                 {
-                    var accessToken = await getAccessToken();
+                    var accessToken =  GetAccessToken();
                     client.Authenticate(accessToken);
                 }
                 else if (!string.IsNullOrWhiteSpace(_emailSettings.UserName))
                     client.Authenticate(_emailSettings.UserName, _emailSettings.Password);
-                await client.SendAsync(mimeMessage);
+                client.Send(mimeMessage);
                 client.Disconnect(true);
             }
         }
-        private async Task<SaslMechanismOAuth2> getAccessToken()
+        //private async Task<SaslMechanismOAuth2> GetAccessTokenAsync()
+        //{
+        //    var attributes = new List<KeyValuePair<string, string>>
+        //    {
+        //        new KeyValuePair<string, string>("grant_type", _emailSettings.OAuth2.GrantType),
+        //        new KeyValuePair<string, string>("client_id", _emailSettings.OAuth2.ClientId),
+        //        new KeyValuePair<string, string>("client_secret", _emailSettings.OAuth2.ClientSecret),
+        //        new KeyValuePair<string, string>("scope", _emailSettings.OAuth2.Scopes),
+        //    };
+        //    var content = new FormUrlEncodedContent(attributes);
+        //    using (var client = new HttpClient())
+        //    {
+        //        var response = await client.PostAsync(_emailSettings.OAuth2.TokenUri, content).ConfigureAwait(continueOnCapturedContext: false);
+        //        var responseString = await response.Content.ReadAsStringAsync();
+        //        var json = JObject.Parse(responseString);
+        //        var token = json["access_token"];
+        //        return token != null
+        //            ? new SaslMechanismOAuth2(_emailSettings.SenderEmail, token.ToString())
+        //            : null;
+        //    }
+        //}
+        private SaslMechanismOAuth2 GetAccessToken()
         {
-            var attributes = new List<KeyValuePair<string, string>>
+            try
             {
-                new KeyValuePair<string, string>("grant_type", _emailSettings.OAuth2.GrantType),
-                new KeyValuePair<string, string>("client_id", _emailSettings.OAuth2.ClientId),
-                new KeyValuePair<string, string>("client_secret", _emailSettings.OAuth2.ClientSecret),
-                new KeyValuePair<string, string>("scope", _emailSettings.OAuth2.Scopes),
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+                using (var client = new WebClient())
+                {
+                    var parameters = new NameValueCollection
+            {
+                {"grant_type", "client_credentials"},
+                {"client_id", _emailSettings.OAuth2.ClientId},
+                {"client_secret", _emailSettings.OAuth2.ClientSecret},
+                {"scope", _emailSettings.OAuth2.Scopes}
             };
-            var content = new FormUrlEncodedContent(attributes);
-            using (var client = new HttpClient())
+
+                    byte[] response = client.UploadValues(_emailSettings.OAuth2.TokenUri, parameters);
+                    string result = System.Text.Encoding.UTF8.GetString(response);
+                    string token = JObject.Parse(result)["access_token"].ToString();
+                    return token != null
+                            ? new SaslMechanismOAuth2(_emailSettings.SenderEmail, token)
+                            : null;
+                }
+            }
+            catch (Exception ex)
             {
-                var response = await client.PostAsync(_emailSettings.OAuth2.TokenUri, content).ConfigureAwait(continueOnCapturedContext: false);
-                var responseString = await response.Content.ReadAsStringAsync();
-                var json = JObject.Parse(responseString);
-                var token = json["access_token"];
-                return token != null
-                    ? new SaslMechanismOAuth2(_emailSettings.SenderEmail, token.ToString())
-                    : null;
+                throw new Exception($"Failed to get access token: {ex.Message}", ex);
             }
         }
     }
