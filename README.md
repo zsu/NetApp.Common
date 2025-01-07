@@ -15,7 +15,6 @@ Install-Package NetApp.Common
   ```xml
      services.AddEncryptionService(options => {
          options.Key=Configuration.GetValue<string>("Encryption:Key"); //32 bytes key
-         options.Iv = Configuration.GetValue<string>("Encryption:Iv");
      });
      services.AddCacheManager(options => {
          var redisConnectionstring = GetConnectionString("RedisConnection"); 
