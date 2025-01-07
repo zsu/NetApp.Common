@@ -15,10 +15,21 @@ namespace NetApp.Common
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEncryptionService(this IServiceCollection services, Action<EncryptionOptions> setupAction)
+        public static IServiceCollection AddEncryptionService(this IServiceCollection services, string key)
         {
-            services.AddOptions<EncryptionOptions>().Configure(setupAction);
-            services.AddTransient<IEncryptionService, EncryptionService>();
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+            services.AddTransient<IEncryptionService>(sp => new EncryptionService(key));
+            return services;
+        }
+        public static IServiceCollection AddEncryptionService(this IServiceCollection services, Func<IServiceProvider, string> keyProvider)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+            if (keyProvider == null)
+                services.AddTransient<IEncryptionService>(sp => new EncryptionService(null));
+            else
+                services.AddTransient<IEncryptionService>(sp => new EncryptionService(keyProvider(sp)));
             return services;
         }
         public static IServiceCollection AddEmailService(this IServiceCollection services, Action<EmailSettings> setupAction)
@@ -40,7 +51,8 @@ namespace NetApp.Common
             services.AddSingleton<ICacheManager<DistributedCacheManager>>(provider =>
             {
                 var cacheOptions = provider.GetRequiredService<IOptions<CacheManagerOptions>>();
-                services.AddStackExchangeRedisCache(options => {
+                services.AddStackExchangeRedisCache(options =>
+                {
                     options = cacheOptions?.Value.RedisCacheOptions;
                 });
                 return new DistributedCacheManager(provider.GetRequiredService<IDistributedCache>());
