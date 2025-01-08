@@ -1,9 +1,12 @@
 [![NuGet](https://img.shields.io/nuget/v/NetApp.Common.svg)](https://www.nuget.org/packages/NetApp.Common)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-# What is NetApp.Common
-
-Cache, Encryption, Email, Password Generator, Util libraries for .Net
+# Features
+  AES Encryption/Decryption
+  Memory & Distributed Cache
+  Email Service with OAuth2 support
+  Password Generator
+  Common Utilities
 
 # NuGet
 ```xml
@@ -13,9 +16,7 @@ Install-Package NetApp.Common
 
   * Call the followings in Startup:  
   ```xml
-     services.AddEncryptionService(options => {
-         options.Key=Configuration.GetValue<string>("Encryption:Key"); //32 bytes key
-     });
+     services.AddEncryptionService(Configuration.GetValue<string>("Encryption:Key"));
      services.AddCacheManager(options => {
          var redisConnectionstring = GetConnectionString("RedisConnection"); 
          options.RedisCacheOptions.Configuration = redisConnectionstring;
@@ -28,10 +29,8 @@ Install-Package NetApp.Common
   ```
  * appsettings.json
  ```xml
-   //AES Key and Iv
     "Encryption": {
-     "Key": "xxxxx",
-     "Iv": "xxx"
+     "Key": "xxxxx" //32 bytes key
    },
    "Email": {
      "Smtp": "",
