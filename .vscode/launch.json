@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch NetApp.Common.Test",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        "program": "${workspaceFolder}/NetApp.Common.Test/bin/Debug/net8.0/NetApp.Common.Test.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/NetApp.Common.Test",
+        "stopAtEntry": false,
+        "console": "internalConsole"
+      }
+    ]
+  }
+  
